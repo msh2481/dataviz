@@ -371,16 +371,21 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  min-height: 60vh;
 }
 
 .chart-square {
-  width: min(100%, 480px);
-  height: 480px;
+  width: 100%;
+  height: 60vh;
 }
 
 @media (max-width: 720px) {
+  .chart-shell {
+    min-height: 45vh;
+  }
+
   .chart-square {
-    height: 360px;
-    width: min(100%, 360px);
+    height: 45vh;
   }
 }
