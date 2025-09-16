@@ -25,5 +25,5 @@ Upload a dataset (CSV or Parquet) via `POST /dataset/load` using a multipart for
 
 - Pandas powers dataframe operations; heavier calculations (distance correlation, rolling stats) rely on NumPy/SciPy.
 - Sampling keeps responsiveness high: endpoints operate on a deterministic sample (`random_state=42`) capped at the requested size.
-- Distance correlation falls back to a manual implementation if SciPy’s helper is unavailable.
+- Distance correlation uses the `dcor` implementation for robustness across environments.
 - All responses match the frontend TypeScript contracts so integration only requires swapping the mock service calls for `fetch`/`react-query` requests.

@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from typing import Iterable, Literal
 
+import dcor
 import numpy as np
 import pandas as pd
-from scipy import stats
-from scipy.spatial import distance
 
 FeatureType = Literal["numeric", "categorical", "datetime"]
 
@@ -164,28 +163,12 @@ def distance_correlation(x: pd.Series, y: pd.Series) -> float | None:
     if np.allclose(xv, xv.mean()) or np.allclose(yv, yv.mean()):
         return 0.0
     try:
-        return float(stats.distance_correlation(xv, yv))
+        value = float(dcor.distance_correlation(xv, yv))
+        if np.isnan(value):
+            return None
+        return value
     except Exception:
-        # scipy<1.10 lacks distance_correlation; fallback to manual implementation
-        return float(_distance_correlation_manual(xv, yv))
-
-
-def _distance_correlation_manual(x: np.ndarray, y: np.ndarray) -> float:
-    def _centered_distance_matrix(arr: np.ndarray) -> np.ndarray:
-        distances = stats.distance.cdist(arr[:, None], arr[:, None], metric="euclidean")
-        row_mean = distances.mean(axis=1, keepdims=True)
-        col_mean = distances.mean(axis=0, keepdims=True)
-        total_mean = distances.mean()
-        return distances - row_mean - col_mean + total_mean
-
-    a = _centered_distance_matrix(x)
-    b = _centered_distance_matrix(y)
-    dcov = np.sqrt(np.mean(a * b))
-    dvar_x = np.sqrt(np.mean(a * a))
-    dvar_y = np.sqrt(np.mean(b * b))
-    if dvar_x <= 0 or dvar_y <= 0:
-        return 0.0
-    return float(dcov / np.sqrt(dvar_x * dvar_y))
+        return None
 
 
 def align_non_null(x: pd.Series, y: pd.Series) -> tuple[pd.Series, pd.Series]:
