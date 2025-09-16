@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 import numpy as np
 import pandas as pd
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
@@ -14,6 +16,11 @@ from .schemas import (
     TimeLensRequest,
     TimeLensResponse,
 )
+
+logger = logging.getLogger("eda_copilot")
+if not logger.handlers:
+    logging.basicConfig(level=logging.INFO)
+logger.setLevel(logging.INFO)
 
 app = FastAPI(title="EDA Copilot API", version="0.1.0")
 
@@ -65,9 +72,15 @@ def _generate_demo_dataset(rows: int = 8_000) -> pd.DataFrame:
 
 def _bootstrap_demo_dataset() -> None:
     if MANAGER.is_loaded:
+        try:
+            meta = MANAGER.metadata
+            logger.info("Dataset already loaded: name=%s rows=%s cols=%s", meta.name, meta.rows, meta.columns)
+        except Exception:
+            logger.info("Dataset already loaded")
         return
     demo_df = _generate_demo_dataset()
     MANAGER.load_dataframe(demo_df, name="synthetic_demo")
+    logger.info("Loaded synthetic demo dataset: rows=%s cols=%s", len(demo_df), demo_df.shape[1])
 
 
 _bootstrap_demo_dataset()
@@ -85,7 +98,15 @@ async def load_dataset(
     try:
         content = await file.read()
         meta = manager.load_file(content, file.filename or "dataset")
-        return DatasetSummary(**manager.dataset_summary())
+        summary = manager.dataset_summary()
+        logger.info(
+            "Loaded dataset from upload: name=%s rows=%s cols=%s sample=%s",
+            meta.name,
+            meta.rows,
+            meta.columns,
+            summary.get("sampleSize"),
+        )
+        return DatasetSummary(**summary)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -95,7 +116,15 @@ async def dataset_summary(
     manager: DatasetManager = Depends(get_manager),
 ) -> DatasetSummary:
     try:
-        return DatasetSummary(**manager.dataset_summary())
+        summary = manager.dataset_summary()
+        logger.info(
+            "Served dataset summary: name=%s sample=%s features=%s targets=%s",
+            summary.get("name"),
+            summary.get("sampleSize"),
+            len(summary.get("features", [])),
+            summary.get("targets"),
+        )
+        return DatasetSummary(**summary)
     except DatasetNotLoadedError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 

@@ -57,7 +57,7 @@ export function FeatureCatalog({ features, activeFeatureId, onSelect }: FeatureC
             <div className="meta">
               <span>{feature.type}</span>
               <span>
-                ρ {feature.spearman !== undefined ? feature.spearman.toFixed(2) : '—'}
+                ρ {feature.spearman != null ? feature.spearman.toFixed(2) : '—'}
               </span>
             </div>
           </button>
