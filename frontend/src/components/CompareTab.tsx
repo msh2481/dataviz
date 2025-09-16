@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
+import type { CSSProperties } from 'react';
 
 import ReactECharts from 'echarts-for-react';
+import type { EChartsOption } from 'echarts';
 import type { CompareConfig, FeatureSummary } from '../types';
 
 const CHART_STYLE: CSSProperties = { height: '60vh', width: '100%' } as const;
@@ -12,11 +14,11 @@ interface CompareTabProps {
   onConfigChange: (config: CompareConfig) => void;
 }
 
-function buildOptions(config: CompareConfig, series: CompareTabProps['series']) {
+function buildOptions(config: CompareConfig, series: CompareTabProps['series']): EChartsOption {
   if (!series.length) {
     return {
       title: { text: 'Choose at least one feature to populate the chart' }
-    };
+    } as EChartsOption;
   }
 
   if (config.chartType === 'scatter') {
@@ -38,7 +40,7 @@ function buildOptions(config: CompareConfig, series: CompareTabProps['series']) 
         symbolSize: 6,
         emphasis: { focus: 'series' }
       }))
-    };
+    } as EChartsOption;
   }
 
   if (config.chartType === 'distribution') {
@@ -57,10 +59,10 @@ function buildOptions(config: CompareConfig, series: CompareTabProps['series']) 
         type: 'line',
         smooth: true
       }))
-    };
+    } as EChartsOption;
   }
 
-  return {};
+  return {} as EChartsOption;
 }
 
 export function CompareTab({ features, config, series, onConfigChange }: CompareTabProps) {

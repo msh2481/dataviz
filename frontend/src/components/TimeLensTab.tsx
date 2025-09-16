@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { CSSProperties } from 'react';
 import ReactECharts from 'echarts-for-react';
+import type { EChartsOption } from 'echarts';
 import type { DatasetSummary, FeatureSummary, TimeLensResponse } from '../types';
 
 interface TimeLensTabProps {
@@ -44,7 +46,7 @@ export function TimeLensTab({ dataset, feature, data, orderField, onRequest }: T
   const corrKeys = data?.correlation.values.map((point) => point.key) ?? [];
   const corrValues = data?.correlation.values.map((point) => point.value) ?? [];
 
-  const correlationOptions = {
+  const correlationOptions: EChartsOption = {
     tooltip: { trigger: 'axis' },
     dataZoom: [{ type: 'inside' }, { type: 'slider', bottom: 10 }],
     xAxis: { type: 'category', data: corrKeys, name: data?.correlation.orderField ?? 'order' },
@@ -67,7 +69,7 @@ export function TimeLensTab({ dataset, feature, data, orderField, onRequest }: T
   const iqrHeight = data?.featureTrend.map((point) => point.q75 - point.q25) ?? [];
   const medianValues = data?.featureTrend.map((point) => point.median) ?? [];
 
-  const trendOptions = {
+  const trendOptions: EChartsOption = {
     tooltip: { trigger: 'axis' },
     dataZoom: [{ type: 'inside' }, { type: 'slider', bottom: 10 }],
     xAxis: { type: 'category', data: trendKeys, name: data?.correlation.orderField ?? 'order' },

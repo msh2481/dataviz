@@ -1,11 +1,12 @@
 import ReactECharts from 'echarts-for-react';
+import type { EChartsOption } from 'echarts';
 import type { FeatureSummary } from '../types';
 
 interface OverviewTabProps {
   features: FeatureSummary[];
 }
 
-function sparklineOptions(values: number[]) {
+function sparklineOptions(values: number[]): EChartsOption {
   return {
     grid: { top: 10, bottom: 10, left: 10, right: 10 },
     xAxis: {
@@ -32,7 +33,7 @@ function sparklineOptions(values: number[]) {
         }
       }
     ]
-  };
+  } as EChartsOption;
 }
 
 export function OverviewTab({ features }: OverviewTabProps) {

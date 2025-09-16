@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { CSSProperties } from 'react';
+import type { ComponentProps, CSSProperties } from 'react';
 import ReactECharts from 'echarts-for-react';
+import type { EChartsOption } from 'echarts';
 import type { FeatureSummary, HistogramBin } from '../types';
 
 interface FeatureDetailsProps {
@@ -95,7 +96,7 @@ export function FeatureDetails({ feature, onClose }: FeatureDetailsProps) {
     ];
   }, [feature]);
 
-  const histogramOptions = useMemo(
+  const histogramOptions = useMemo<EChartsOption>(
     () => ({
       grid: { top: 20, bottom: 40, left: 40, right: 10 },
       dataZoom: [
@@ -164,6 +165,10 @@ export function FeatureDetails({ feature, onClose }: FeatureDetailsProps) {
     );
   }
 
+  const ReactEChartsWithEvents = ReactECharts as unknown as React.ComponentType<
+    ComponentProps<typeof ReactECharts> & { onEvents?: Record<string, (event: unknown) => void> }
+  >;
+
   return (
     <section className="section" style={{ minHeight: 300 }}>
       <div className="section-header">
@@ -207,7 +212,7 @@ export function FeatureDetails({ feature, onClose }: FeatureDetailsProps) {
         </div>
         <div className="histogram-panel">
           <div className="chart-shell">
-            <ReactECharts
+            <ReactEChartsWithEvents
               key={feature.id}
               className="chart-square"
               style={CHART_STYLE}
