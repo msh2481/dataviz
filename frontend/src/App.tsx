@@ -28,6 +28,7 @@ export default function App() {
     compareSeries,
     refreshCompare,
     timeLens,
+    timeOrder,
     loadTimeLens,
     adjustSample,
     isLoading,
@@ -63,7 +64,7 @@ export default function App() {
   const renderTab = (id: TabId) => {
     switch (id) {
       case 'overview':
-        return <OverviewTab features={summary.features.slice(0, 6)} correlations={correlations} />;
+        return <OverviewTab features={summary.features.slice(0, 9)} />;
       case 'compare':
         return (
           <CompareTab
@@ -83,7 +84,15 @@ export default function App() {
           />
         );
       case 'timeline':
-        return <TimeLensTab dataset={summary} feature={activeFeature} data={timeLens} onRequest={loadTimeLens} />;
+        return (
+          <TimeLensTab
+            dataset={summary}
+            feature={activeFeature}
+            data={timeLens}
+            orderField={timeOrder}
+            onRequest={loadTimeLens}
+          />
+        );
       default:
         return null;
     }

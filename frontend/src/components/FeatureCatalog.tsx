@@ -8,9 +8,11 @@ interface FeatureCatalogProps {
   onSelect: (feature: FeatureSummary) => void;
 }
 
+type SortKey = 'name' | 'pearson' | 'spearman';
+
 export function FeatureCatalog({ features, activeFeatureId, onSelect }: FeatureCatalogProps) {
   const [query, setQuery] = useState('');
-  const [sortKey, setSortKey] = useState<'name' | 'pearson' | 'missing'>('name');
+  const [sortKey, setSortKey] = useState<SortKey>('name');
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -21,8 +23,7 @@ export function FeatureCatalog({ features, activeFeatureId, onSelect }: FeatureC
     return items.slice().sort((a, b) => {
       if (sortKey === 'name') return a.name.localeCompare(b.name);
       if (sortKey === 'pearson') return Math.abs(b.pearson ?? 0) - Math.abs(a.pearson ?? 0);
-      if (sortKey === 'missing') return (b.missingRate ?? 0) - (a.missingRate ?? 0);
-      return 0;
+      return Math.abs(b.spearman ?? 0) - Math.abs(a.spearman ?? 0);
     });
   }, [features, query, sortKey]);
 
@@ -38,10 +39,10 @@ export function FeatureCatalog({ features, activeFeatureId, onSelect }: FeatureC
       </div>
       <div className="small-text">Sort by</div>
       <div className="compare-config">
-        <select className="select" value={sortKey} onChange={(event) => setSortKey(event.target.value as typeof sortKey)}>
+        <select className="select" value={sortKey} onChange={(event) => setSortKey(event.target.value as SortKey)}>
           <option value="name">Name</option>
           <option value="pearson">|Pearson|</option>
-          <option value="missing">Missing %</option>
+          <option value="spearman">|Spearman|</option>
         </select>
       </div>
       <div className="feature-list">
@@ -55,7 +56,9 @@ export function FeatureCatalog({ features, activeFeatureId, onSelect }: FeatureC
             <div className="name">{feature.name}</div>
             <div className="meta">
               <span>{feature.type}</span>
-              <span>{Math.round((feature.missingRate ?? 0) * 100)}% missing</span>
+              <span>
+                ρ {feature.spearman !== undefined ? feature.spearman.toFixed(2) : '—'}
+              </span>
             </div>
           </button>
         ))}

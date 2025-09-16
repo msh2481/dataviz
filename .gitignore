@@ -1,3 +1,5 @@
 __pycache__/
 *.zip
 *.parquet
+node_modules
+package-lock.json

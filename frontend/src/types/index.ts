@@ -1,10 +1,22 @@
 export type FeatureType = 'numeric' | 'categorical' | 'datetime';
 
+export interface QuantileSummary {
+  q05: number;
+  q25: number;
+  q50: number;
+  q75: number;
+  q95: number;
+}
+
+export interface HistogramBin {
+  label: string;
+  value: number;
+}
+
 export interface FeatureSummary {
   id: string;
   name: string;
   type: FeatureType;
-  missingRate: number;
   cardinality?: number;
   mean?: number;
   median?: number;
@@ -14,7 +26,9 @@ export interface FeatureSummary {
   pearson?: number;
   spearman?: number;
   distance?: number;
+  quantiles?: QuantileSummary;
   sparkline: number[];
+  distribution: HistogramBin[];
 }
 
 export interface DatasetSummary {
@@ -31,7 +45,7 @@ export interface CompareConfig {
   x: string | null;
   y: string | null;
   color: string | null;
-  chartType: 'scatter' | 'distribution' | 'heatmap';
+  chartType: 'scatter' | 'distribution';
 }
 
 export interface CorrelationRecord {
@@ -42,7 +56,7 @@ export interface CorrelationRecord {
 }
 
 export interface TimeSeriesPoint {
-  timestamp: string;
+  key: string;
   value: number;
 }
 
@@ -50,5 +64,29 @@ export interface TimeCorrelationSeries {
   feature: string;
   target: string;
   window: number;
+  orderField: string | null;
   values: TimeSeriesPoint[];
 }
+
+export interface FeatureTrendPoint {
+  key: string;
+  median: number;
+  q25: number;
+  q75: number;
+}
+
+export interface TimeLensResponse {
+  correlation: TimeCorrelationSeries;
+  featureTrend: FeatureTrendPoint[];
+}
+
+export interface OverviewData {
+  dataset: DatasetSummary;
+  correlations: CorrelationRecord[];
+}
+
+export interface CompareSeriesResponse {
+  config: CompareConfig;
+  series: Array<{ name: string; data: Array<[number, number]> }>;
+}
+
