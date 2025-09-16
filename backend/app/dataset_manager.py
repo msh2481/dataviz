@@ -85,8 +85,9 @@ class DatasetManager:
             return df.copy()
         return df.sample(n=sample_size, random_state=42)
 
-    def feature_summaries(self, target: Optional[str] = None) -> list[dict]:
-        df = self.get_sample()
+    def feature_summaries(self, target: Optional[str] = None, df: Optional[pd.DataFrame] = None) -> list[dict]:
+        if df is None:
+            df = self.get_sample()
         summaries: list[dict] = []
         target_series = df[target] if target and target in df.columns else None
 
@@ -129,14 +130,16 @@ class DatasetManager:
     def dataset_summary(self) -> dict:
         meta = self.metadata
         df = self.get_sample()
+        targets = self._infer_target_candidates(df)
+        primary_target = targets[0] if targets else None
         return {
             "name": meta.name,
             "rows": meta.rows,
             "columns": meta.columns,
             "sampleSize": len(df),
             "lastUpdated": pd.Timestamp.utcnow().isoformat(),
-            "targets": self._infer_target_candidates(df),
-            "features": self.feature_summaries(),
+            "targets": targets,
+            "features": self.feature_summaries(primary_target, df),
         }
 
     def correlations_for_target(self, target: str) -> list[dict]:
