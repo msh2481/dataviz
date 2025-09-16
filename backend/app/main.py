@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import numpy as np
+import pandas as pd
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -25,6 +27,50 @@ app.add_middleware(
 
 
 MANAGER = DatasetManager()
+
+
+def _generate_demo_dataset(rows: int = 8_000) -> pd.DataFrame:
+    rng = np.random.default_rng(seed=42)
+    half = rows // 2
+    x1 = rng.normal(loc=0.0, scale=1.1, size=rows)
+    x2 = rng.normal(loc=0.0, scale=1.0, size=rows)
+    x3 = rng.normal(loc=0.5, scale=1.2, size=rows)
+    x4 = rng.normal(loc=-0.25, scale=0.9, size=rows)
+    noise = rng.normal(loc=0.0, scale=0.2, size=rows)
+
+    y = np.empty(rows)
+    y[:half] = x1[:half] + np.sin(x2[:half]) + noise[:half]
+    y[half:] = x3[half:] + np.sin(x4[half:]) + noise[half:]
+
+    timestamp = pd.date_range("2023-01-01", periods=rows, freq="H")
+    segment = np.where(np.arange(rows) < half, "phase_1", "phase_2")
+    category = rng.choice(["alpha", "beta", "gamma"], size=rows, p=[0.4, 0.35, 0.25])
+    x_mix = 0.6 * x1 + 0.4 * x3 + rng.normal(loc=0.0, scale=0.15, size=rows)
+
+    return pd.DataFrame(
+        {
+            "timestamp": timestamp,
+            "x1": x1,
+            "x2": x2,
+            "x3": x3,
+            "x4": x4,
+            "x_mix": x_mix,
+            "noise": noise,
+            "y": y,
+            "segment": segment,
+            "category": category,
+        }
+    )
+
+
+def _bootstrap_demo_dataset() -> None:
+    if MANAGER.is_loaded:
+        return
+    demo_df = _generate_demo_dataset()
+    MANAGER.load_dataframe(demo_df, name="synthetic_demo")
+
+
+_bootstrap_demo_dataset()
 
 
 async def get_manager() -> DatasetManager:

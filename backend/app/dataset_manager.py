@@ -45,6 +45,10 @@ class DatasetManager:
             columns=df.shape[1],
         )
 
+    @property
+    def is_loaded(self) -> bool:
+        return self._df is not None
+
     def load_file(self, file_bytes: bytes, filename: str) -> DatasetMetadata:
         buffer = io.BytesIO(file_bytes)
         suffix = Path(filename).suffix.lower()
@@ -58,6 +62,13 @@ class DatasetManager:
         with self._lock:
             self._df = df
             self._name = filename
+            self._sample_size = min(5_000, len(df))
+        return self.metadata
+
+    def load_dataframe(self, df: pd.DataFrame, name: str = "dataset") -> DatasetMetadata:
+        with self._lock:
+            self._df = df.copy()
+            self._name = name
             self._sample_size = min(5_000, len(df))
         return self.metadata
 
