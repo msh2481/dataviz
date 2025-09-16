@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Annotated
-
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -36,7 +34,7 @@ async def get_manager() -> DatasetManager:
 @app.post("/dataset/load", response_model=DatasetSummary)
 async def load_dataset(
     file: UploadFile = File(...),
-    manager: Annotated[DatasetManager, Depends(get_manager)],
+    manager: DatasetManager = Depends(get_manager),
 ) -> DatasetSummary:
     try:
         content = await file.read()
@@ -48,7 +46,7 @@ async def load_dataset(
 
 @app.get("/dataset/summary", response_model=DatasetSummary)
 async def dataset_summary(
-    manager: Annotated[DatasetManager, Depends(get_manager)],
+    manager: DatasetManager = Depends(get_manager),
 ) -> DatasetSummary:
     try:
         return DatasetSummary(**manager.dataset_summary())
@@ -59,7 +57,7 @@ async def dataset_summary(
 @app.post("/dataset/sample", response_model=DatasetSummary)
 async def update_sample(
     payload: SampleUpdateRequest,
-    manager: Annotated[DatasetManager, Depends(get_manager)],
+    manager: DatasetManager = Depends(get_manager),
 ) -> DatasetSummary:
     try:
         if payload.sampleSize is not None:
@@ -76,7 +74,7 @@ async def update_sample(
 @app.get("/dataset/{target}/correlations")
 async def target_correlations(
     target: str,
-    manager: Annotated[DatasetManager, Depends(get_manager)],
+    manager: DatasetManager = Depends(get_manager),
 ):
     try:
         return manager.correlations_for_target(target)
@@ -87,7 +85,7 @@ async def target_correlations(
 @app.post("/compare", response_model=CompareResponse)
 async def compare_features(
     payload: CompareRequest,
-    manager: Annotated[DatasetManager, Depends(get_manager)],
+    manager: DatasetManager = Depends(get_manager),
 ) -> CompareResponse:
     config = payload.config
     try:
@@ -100,7 +98,7 @@ async def compare_features(
 @app.post("/time-lens", response_model=TimeLensResponse)
 async def time_lens(
     payload: TimeLensRequest,
-    manager: Annotated[DatasetManager, Depends(get_manager)],
+    manager: DatasetManager = Depends(get_manager),
 ) -> TimeLensResponse:
     try:
         result = manager.time_lens(payload.feature, payload.target, payload.window, payload.orderField)
