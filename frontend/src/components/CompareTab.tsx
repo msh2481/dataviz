@@ -123,7 +123,9 @@ export function CompareTab({ features, config, series, onConfigChange }: Compare
           ))}
         </select>
       </div>
-      <ReactECharts className="chart-container" option={buildOptions(config, series)} notMerge lazyUpdate />
+      <div className="chart-shell">
+        <ReactECharts className="chart-square" option={buildOptions(config, series)} notMerge lazyUpdate />
+      </div>
     </div>
   );
 }

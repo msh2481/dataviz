@@ -134,11 +134,15 @@ export function TimeLensTab({ dataset, feature, data, orderField, onRequest }: T
       <div className="section-body two-column">
         <div className="section panel">
           <h3 className="section-title">Correlation vs. {target}</h3>
-          <ReactECharts className="chart-square" option={correlationOptions} notMerge lazyUpdate />
+          <div className="chart-shell">
+            <ReactECharts className="chart-square" option={correlationOptions} notMerge lazyUpdate />
+          </div>
         </div>
         <div className="section panel">
           <h3 className="section-title">Trend of {feature.name}</h3>
-          <ReactECharts className="chart-square" option={trendOptions} notMerge lazyUpdate />
+          <div className="chart-shell">
+            <ReactECharts className="chart-square" option={trendOptions} notMerge lazyUpdate />
+          </div>
         </div>
       </div>
     </section>
