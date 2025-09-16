@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { CSSProperties } from 'react';
 import ReactECharts from 'echarts-for-react';
 import type { FeatureSummary, HistogramBin } from '../types';
 
@@ -7,6 +8,7 @@ interface FeatureDetailsProps {
   onClose: () => void;
 }
 
+const CHART_STYLE: CSSProperties = { height: '60vh', width: '100%' } as const;
 const DEFAULT_BIN_COUNT = 24;
 const BIN_OPTIONS = [12, 24, 36, 48];
 
@@ -208,6 +210,7 @@ export function FeatureDetails({ feature, onClose }: FeatureDetailsProps) {
             <ReactECharts
               key={feature.id}
               className="chart-square"
+              style={CHART_STYLE}
               option={histogramOptions}
               notMerge
               lazyUpdate

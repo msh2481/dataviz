@@ -12,6 +12,7 @@ interface TimeLensTabProps {
 
 const ROLLING_WINDOWS = [7, 14, 30, 60];
 const DEFAULT_ORDER = '__dataset__';
+const CHART_STYLE: CSSProperties = { height: '60vh', width: '100%' } as const;
 
 export function TimeLensTab({ dataset, feature, data, orderField, onRequest }: TimeLensTabProps) {
   const [target, setTarget] = useState(() => dataset.targets[0]);
@@ -135,13 +136,25 @@ export function TimeLensTab({ dataset, feature, data, orderField, onRequest }: T
         <div className="section panel">
           <h3 className="section-title">Correlation vs. {target}</h3>
           <div className="chart-shell">
-            <ReactECharts className="chart-square" option={correlationOptions} notMerge lazyUpdate />
+            <ReactECharts
+              className="chart-square"
+              style={CHART_STYLE}
+              option={correlationOptions}
+              notMerge
+              lazyUpdate
+            />
           </div>
         </div>
         <div className="section panel">
           <h3 className="section-title">Trend of {feature.name}</h3>
           <div className="chart-shell">
-            <ReactECharts className="chart-square" option={trendOptions} notMerge lazyUpdate />
+            <ReactECharts
+              className="chart-square"
+              style={CHART_STYLE}
+              option={trendOptions}
+              notMerge
+              lazyUpdate
+            />
           </div>
         </div>
       </div>

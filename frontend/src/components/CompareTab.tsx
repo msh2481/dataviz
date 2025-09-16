@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
+
 import ReactECharts from 'echarts-for-react';
 import type { CompareConfig, FeatureSummary } from '../types';
+
+const CHART_STYLE: CSSProperties = { height: '60vh', width: '100%' } as const;
 
 interface CompareTabProps {
   features: FeatureSummary[];
@@ -124,7 +127,7 @@ export function CompareTab({ features, config, series, onConfigChange }: Compare
         </select>
       </div>
       <div className="chart-shell">
-        <ReactECharts className="chart-square" option={buildOptions(config, series)} notMerge lazyUpdate />
+        <ReactECharts className="chart-square" style={CHART_STYLE} option={buildOptions(config, series)} notMerge lazyUpdate />
       </div>
     </div>
   );
